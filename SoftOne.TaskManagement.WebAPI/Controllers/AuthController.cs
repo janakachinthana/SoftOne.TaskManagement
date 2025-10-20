@@ -31,7 +31,7 @@ namespace SoftOne.TaskManagement.WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Lgin(UserRegisterDto request)
+        public async Task<ActionResult<string>> Lgin(UserLoginDto request)
         {
           var token = await authService.LogingAsync(request);
             if (token is null)

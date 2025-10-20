@@ -13,7 +13,7 @@ namespace SoftOne.TaskManagement.WebAPI.Controllers
     public class TaskController(ITaskService service) : ControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<Taks?>> CreateOrUpdateTask(TaskDto taskDto)
+        public async Task<ActionResult<TaskWork?>> CreateOrUpdateTask(TaskDto taskDto)
         {
             var task = await service.CreateOrUpdateTask(taskDto);
             if (task is null)
@@ -25,7 +25,7 @@ namespace SoftOne.TaskManagement.WebAPI.Controllers
         }
 
         [HttpPost("Remove")]
-        public async Task<ActionResult<Taks>> RemoveTask(Guid id)
+        public async Task<ActionResult<TaskWork>> RemoveTask(Guid id)
         {
             var task = await service.RemoveTask(id);
             if (task is null)

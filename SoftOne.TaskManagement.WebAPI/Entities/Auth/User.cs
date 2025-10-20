@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using SoftOne.TaskManagement.WebAPI.Entities.Taks;
 
 namespace SoftOne.TaskManagement.WebAPI.Entities.Auth
 {
@@ -12,5 +13,6 @@ namespace SoftOne.TaskManagement.WebAPI.Entities.Auth
         public string PasswordHash { get; set; } = string.Empty;
         public new Guid CreatorUserId { get; set; } = Guid.Empty;
         public new Guid LastModifierUserId { get; set; } = Guid.Empty;
+        public List<TaskWork> Taks { get; set; } = new();
     }
 }

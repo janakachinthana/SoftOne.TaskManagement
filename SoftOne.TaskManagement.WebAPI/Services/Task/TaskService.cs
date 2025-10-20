@@ -12,15 +12,15 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
            ? parsedId
            : Guid.Empty;
 
-        public async Task<Taks?> CreateOrUpdateTask(TaskDto taskDto)
+        public async Task<TaskWork?> CreateOrUpdateTask(TaskDto taskDto)
         {
 
-            Taks? task;
+            TaskWork? task;
 
             task = await Context.Taks.FindAsync(taskDto.Id);
             if (task is null)
             {
-                task = new Taks
+                task = new TaskWork
                 {
                     Title = taskDto.Title,
                     Description = taskDto.Description,
@@ -48,9 +48,9 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
 
         }
 
-        public async Task<Taks?> RemoveTask(Guid id)
+        public async Task<TaskWork?> RemoveTask(Guid id)
         {
-            Taks? task = await Context.Taks.FindAsync(id);
+            TaskWork? task = await Context.Taks.FindAsync(id);
             if (task is null)
             {
                 return null;

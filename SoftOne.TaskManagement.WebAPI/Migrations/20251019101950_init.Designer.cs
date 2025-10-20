@@ -12,7 +12,7 @@ using SoftOne.TaskManagement.WebAPI.Context;
 namespace SoftOne.TaskManagement.WebAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251019085054_init")]
+    [Migration("20251019101950_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -72,7 +72,7 @@ namespace SoftOne.TaskManagement.WebAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("SoftOne.TaskManagement.WebAPI.Entities.Taks.Taks", b =>
+            modelBuilder.Entity("SoftOne.TaskManagement.WebAPI.Entities.Taks.TaskWork", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,9 +105,28 @@ namespace SoftOne.TaskManagement.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Taks");
+                });
+
+            modelBuilder.Entity("SoftOne.TaskManagement.WebAPI.Entities.Taks.TaskWork", b =>
+                {
+                    b.HasOne("SoftOne.TaskManagement.WebAPI.Entities.Auth.User", null)
+                        .WithMany("Taks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SoftOne.TaskManagement.WebAPI.Entities.Auth.User", b =>
+                {
+                    b.Navigation("Taks");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,6 +8,6 @@ namespace SoftOne.TaskManagement.WebAPI.Context
     public class AppDbContext(DbContextOptions<AppDbContext> options): DbContext(options)
     {
         public DbSet<User> Users { get; set; }
-        public DbSet<Taks> Taks { get; set; }
+        public DbSet<TaskWork> Taks { get; set; }
     }
 }
