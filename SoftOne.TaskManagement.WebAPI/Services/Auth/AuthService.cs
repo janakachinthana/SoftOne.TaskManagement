@@ -29,6 +29,7 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Auth
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.NIC = request.NIC;
+            user.Role = request.Role;
             user.PasswordHash = hashedPassword;
 
             context.Users.Add(user);

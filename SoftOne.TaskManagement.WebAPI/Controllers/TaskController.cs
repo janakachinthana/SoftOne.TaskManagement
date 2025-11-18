@@ -12,28 +12,71 @@ namespace SoftOne.TaskManagement.WebAPI.Controllers
     [ApiController]
     public class TaskController(ITaskService service) : ControllerBase
     {
-        [HttpPost]
+        [Authorize]
+        [HttpPost("Create")]
         public async Task<ActionResult<TaskWork?>> CreateOrUpdateTask(TaskDto taskDto)
         {
             var task = await service.CreateOrUpdateTask(taskDto);
             if (task is null)
             {
-                BadRequest("Task not exists!");
+                return BadRequest("Task not exists!");
             }
 
             return (task);
         }
 
-        [HttpPost("Remove")]
+        [Authorize]
+        [HttpDelete("{id:guid}")]
         public async Task<ActionResult<TaskWork>> RemoveTask(Guid id)
         {
             var task = await service.RemoveTask(id);
             if (task is null)
             {
-                BadRequest("Task not exists!") ;
+                return BadRequest("Task not exists!") ;
             }
 
             return Ok(task);
+        }
+
+        [Authorize]
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<TaskWork>> GetTaskById(Guid id)
+        {
+            var task = await service.GetTaskById(id);
+            if (task is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(task);
+        }
+
+        [Authorize]
+        [HttpGet("MyTasks")]
+        public async Task<ActionResult<IEnumerable<TaskWork>>> GetUserTasks()
+        {
+            var tasks = await service.GetUserTasks();
+            return Ok(tasks);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> GetAllTasks([FromQuery] int page =1, [FromQuery] int pageSize =10)
+        {
+            if (page <=0) page =1;
+            if (pageSize <=0) pageSize =10;
+
+            var (items, total) = await service.GetAllTasks(page, pageSize);
+
+            var response = new
+            {
+                Items = items,
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            return Ok(response);
         }
     }
 }

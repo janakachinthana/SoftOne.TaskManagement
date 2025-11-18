@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using SoftOne.TaskManagement.WebAPI.Context;
 using SoftOne.TaskManagement.WebAPI.Entities._Dtos.Task;
 using SoftOne.TaskManagement.WebAPI.Entities.Taks;
@@ -26,7 +27,9 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
                     Description = taskDto.Description,
                     DueDate = taskDto.DueDate,
                     Status = taskDto.Status,
-                    CreatorUserId = currentUserId
+                    UserId = currentUserId,
+                    CreatBy = currentUserId,
+                    CreatedOn = DateTime.UtcNow,
                 };
                 Context.Taks.Add(task);
 
@@ -37,9 +40,9 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
                 task.Description = taskDto.Description;
                 task.DueDate = taskDto.DueDate;
                 task.Status = taskDto.Status;
-                task.LastModifierUserId = currentUserId;
-                task.LastModificationTime = DateTime.Now;
-
+                task.UserId = taskDto.UserId;
+                task.Modifiedby = currentUserId;
+                task.ModifiedOn = DateTime.UtcNow;
                 Context.Taks.Update(task);
             }
 
@@ -60,6 +63,28 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
             await Context.SaveChangesAsync();
 
             return task;
+        }
+
+        public async Task<TaskWork?> GetTaskById(Guid id)
+        {
+            return await Context.Taks.FirstOrDefaultAsync(t => t.Id == id);
+        }
+
+        public async Task<IEnumerable<TaskWork>> GetUserTasks()
+        {
+            return await Context.Taks.Where(t => t.UserId == currentUserId).ToListAsync();
+        }
+
+        public async Task<(IEnumerable<TaskWork> Items, int TotalCount)> GetAllTasks(int page =1, int pageSize =10)
+        {
+            var query = Context.Taks.AsQueryable();
+            var total = await query.CountAsync();
+            var items = await query.OrderBy(t => t.CreatedOn)
+                .Skip((page -1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, total);
         }
     }
 }

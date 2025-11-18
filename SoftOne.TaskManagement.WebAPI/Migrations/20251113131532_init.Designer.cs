@@ -12,7 +12,7 @@ using SoftOne.TaskManagement.WebAPI.Context;
 namespace SoftOne.TaskManagement.WebAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251019101950_init")]
+    [Migration("20251113131532_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -78,11 +78,11 @@ namespace SoftOne.TaskManagement.WebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatorUserId")
+                    b.Property<Guid>("CreatBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -91,10 +91,10 @@ namespace SoftOne.TaskManagement.WebAPI.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModificationTime")
+                    b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("LastModifierUserId")
+                    b.Property<Guid?>("Modifiedby")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -105,7 +105,7 @@ namespace SoftOne.TaskManagement.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -119,9 +119,7 @@ namespace SoftOne.TaskManagement.WebAPI.Migrations
                 {
                     b.HasOne("SoftOne.TaskManagement.WebAPI.Entities.Auth.User", null)
                         .WithMany("Taks")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("SoftOne.TaskManagement.WebAPI.Entities.Auth.User", b =>

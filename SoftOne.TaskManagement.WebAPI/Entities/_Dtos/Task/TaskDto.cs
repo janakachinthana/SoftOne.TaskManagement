@@ -7,5 +7,6 @@
         public string Description { get; set; } = string.Empty;
         public DateTime DueDate { get; set; }
         public string Status { get; set; } = string.Empty;
+        public Guid? UserId { get; set; } = Guid.Empty;
     }
 }

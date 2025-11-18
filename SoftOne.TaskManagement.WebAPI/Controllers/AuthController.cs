@@ -37,7 +37,7 @@ namespace SoftOne.TaskManagement.WebAPI.Controllers
             if (token is null)
                 return BadRequest("Invalid credentials.");
 
-            return Ok(token);
+            return Ok(new { token = token });
         }
 
        
