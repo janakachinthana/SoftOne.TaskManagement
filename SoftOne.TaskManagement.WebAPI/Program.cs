@@ -1,11 +1,14 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SoftOne.TaskManagement.WebAPI.Context;
+using SoftOne.TaskManagement.WebAPI.Profiles;
 using SoftOne.TaskManagement.WebAPI.Services.Auth;
 using SoftOne.TaskManagement.WebAPI.Services.Task;
+using SoftOne.TaskManagement.WebAPI.Services.Users;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,8 +79,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

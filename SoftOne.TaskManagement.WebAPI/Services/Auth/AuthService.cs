@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,9 +12,9 @@ using System.Text;
 
 namespace SoftOne.TaskManagement.WebAPI.Services.Auth
 {
-    public class AuthService(AppDbContext context, IConfiguration configuration) : IAuthService
+    public class AuthService(AppDbContext context, IConfiguration configuration, IMapper mapper) : IAuthService
     {
-        public async Task<User?> RegisterAsync(UserRegisterDto request)
+        public async Task<UserRegisterDto?> RegisterAsync(UserRegisterDto request)
         {
             if (await context.Users.AnyAsync(u => u.Email == request.Email))
             {
@@ -35,7 +36,7 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Auth
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
-            return user;
+            return request;
         }
 
         public async Task<string?> LogingAsync(UserLoginDto request)
@@ -53,15 +54,17 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Auth
                 return null;
             }
 
-            return CreateToken(user);
+            return CreateToken(mapper.Map<UserRegisterDto>(user));
         }
 
-        private string CreateToken(User user)
+        private string CreateToken(UserRegisterDto user)
         {
             var claim = new List<Claim> {
-                new Claim (ClaimTypes.Name, user.Email),
+                new Claim (ClaimTypes.Email, user.Email),
                 new Claim (ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim (ClaimTypes.Role, user.Role)
+                new Claim (ClaimTypes.Role, user.Role),
+                new Claim (ClaimTypes.Name, user.FirstName),
+                new Claim (ClaimTypes.Surname, user.LastName)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));

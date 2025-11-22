@@ -5,10 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using SoftOne.TaskManagement.WebAPI.Entities._Dtos.Auth;
 using SoftOne.TaskManagement.WebAPI.Entities.Auth;
 using SoftOne.TaskManagement.WebAPI.Services.Auth;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SoftOne.TaskManagement.WebAPI.Controllers
 {

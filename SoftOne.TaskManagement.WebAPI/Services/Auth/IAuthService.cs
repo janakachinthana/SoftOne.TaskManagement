@@ -5,7 +5,7 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Auth
 {
     public interface IAuthService
     {
-        Task<User?> RegisterAsync(UserRegisterDto request);
+        Task<UserRegisterDto?> RegisterAsync(UserRegisterDto request);
         Task<string?> LogingAsync(UserLoginDto request);
     }
 }

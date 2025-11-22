@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace SoftOne.TaskManagement.WebAPI.Services.Task
 {
-    public class TaskService(AppDbContext Context, IHttpContextAccessor httpContextAccessor) : ITaskService
+    public class TaskService(AppDbContext context, IHttpContextAccessor httpContextAccessor) : ITaskService
     {
         Guid currentUserId = Guid.TryParse(httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedId)
            ? parsedId
@@ -18,7 +18,7 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
 
             TaskWork? task;
 
-            task = await Context.Taks.FindAsync(taskDto.Id);
+            task = await context.Taks.FindAsync(taskDto.Id);
             if (task is null)
             {
                 task = new TaskWork
@@ -31,7 +31,7 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
                     CreatBy = currentUserId,
                     CreatedOn = DateTime.UtcNow,
                 };
-                Context.Taks.Add(task);
+                context.Taks.Add(task);
 
             }
             else 
@@ -43,41 +43,41 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
                 task.UserId = taskDto.UserId;
                 task.Modifiedby = currentUserId;
                 task.ModifiedOn = DateTime.UtcNow;
-                Context.Taks.Update(task);
+                context.Taks.Update(task);
             }
 
-            await Context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return task;
 
         }
 
         public async Task<TaskWork?> RemoveTask(Guid id)
         {
-            TaskWork? task = await Context.Taks.FindAsync(id);
+            TaskWork? task = await context.Taks.FindAsync(id);
             if (task is null)
             {
                 return null;
             }
 
-            Context.Taks.Remove(task);
-            await Context.SaveChangesAsync();
+            context.Taks.Remove(task);
+            await context.SaveChangesAsync();
 
             return task;
         }
 
         public async Task<TaskWork?> GetTaskById(Guid id)
         {
-            return await Context.Taks.FirstOrDefaultAsync(t => t.Id == id);
+            return await context.Taks.FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<IEnumerable<TaskWork>> GetUserTasks()
         {
-            return await Context.Taks.Where(t => t.UserId == currentUserId).ToListAsync();
+            return await context.Taks.Where(t => t.UserId == currentUserId).ToListAsync();
         }
 
         public async Task<(IEnumerable<TaskWork> Items, int TotalCount)> GetAllTasks(int page =1, int pageSize =10)
         {
-            var query = Context.Taks.AsQueryable();
+            var query = context.Taks.AsQueryable();
             var total = await query.CountAsync();
             var items = await query.OrderBy(t => t.CreatedOn)
                 .Skip((page -1) * pageSize)
@@ -85,6 +85,21 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
                 .ToListAsync();
 
             return (items, total);
+        }
+
+        public async Task<bool> AssignUserForTask(UserTaskDto taskDto)
+        {
+            var task = await context.Taks.FindAsync(taskDto.TaskId);
+            if (task is null)
+            {
+                return false;
+            }
+            task.UserId = taskDto.UserId;
+
+            context.Update(task);
+            await context.SaveChangesAsync();
+
+            return true;
         }
     }
 }
