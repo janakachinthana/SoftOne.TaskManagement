@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SoftOne.TaskManagement.WebAPI.Context;
 using SoftOne.TaskManagement.WebAPI.Entities._Dtos.Task;
 using SoftOne.TaskManagement.WebAPI.Entities.Taks;
+using System.Drawing.Printing;
 using System.Security.Claims;
 
 namespace SoftOne.TaskManagement.WebAPI.Services.Task
@@ -70,9 +71,16 @@ namespace SoftOne.TaskManagement.WebAPI.Services.Task
             return await context.Taks.FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public async Task<IEnumerable<TaskWork>> GetUserTasks()
+        public async Task<(IEnumerable<TaskWork> Items, int TotalCount)> GetUserTasks(int page = 1, int pageSize = 10)
         {
-            return await context.Taks.Where(t => t.UserId == currentUserId).ToListAsync();
+            var query = context.Taks.Where(t => t.UserId == currentUserId).AsQueryable();
+            var total = await query.CountAsync();
+            var items = await query.OrderBy(t => t.CreatedOn)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, total);
         }
 
         public async Task<(IEnumerable<TaskWork> Items, int TotalCount)> GetAllTasks(int page =1, int pageSize =10)

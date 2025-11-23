@@ -53,10 +53,22 @@ namespace SoftOne.TaskManagement.WebAPI.Controllers
 
         [Authorize]
         [HttpGet("MyTasks")]
-        public async Task<ActionResult<IEnumerable<TaskWork>>> GetUserTasks()
+        public async Task<ActionResult> GetUserTasks([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var tasks = await service.GetUserTasks();
-            return Ok(tasks);
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 10;
+
+            var (items, total) = await service.GetUserTasks(page, pageSize);
+
+            var response = new
+            {
+                Items = items,
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            return Ok(response);
         }
 
         [Authorize]
